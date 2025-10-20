@@ -1,0 +1,83 @@
+def is_in_range(row, col, size):
+    if 0 <= row < size and 0 <= col < size:
+        return True
+    return False
+
+
+direction_mapper = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+
+n = int(input())
+
+current_position = None
+matrix = []
+total_stars = 0
+
+initial_grid = []
+for index in range(n):
+    row_data = input().strip()
+    initial_grid.append(row_data)
+    if "P" in row_data:
+        current_position = [index, row_data.index("P")]
+    total_stars += row_data.count('*')
+
+matrix = [list(row) for row in initial_grid]
+
+health = 100
+collected_stars = 0
+ghost_immunity = False
+
+while True:
+    if health <= 0:
+        print(f"Game over! Pacman last coordinates [{current_position[0]},{current_position[1]}]")
+        break
+
+    if collected_stars == total_stars:
+        print("Pacman wins! All the stars are collected.")
+        break
+
+    command = input()
+
+    if command == "end":
+        if collected_stars < total_stars:
+            print("Pacman failed to collect all the stars.")
+        break
+
+    current_row, current_col = current_position
+    matrix[current_row][current_col] = '-'
+
+    row_move, col_move = direction_mapper[command]
+    next_row = current_row + row_move
+    next_col = current_col + col_move
+
+    if next_row < 0:
+        next_row = n - 1
+    elif next_row >= n:
+        next_row = 0
+    if next_col < 0:
+        next_col = n - 1
+    elif next_col >= n:
+        next_col = 0
+
+    current_position = [next_row, next_col]
+
+    current_cell = matrix[next_row][next_col]
+
+    if current_cell == '*':
+        collected_stars += 1
+        matrix[next_row][next_col] = '-'
+    elif current_cell == 'G':
+        if not ghost_immunity:
+            health -= 50
+        ghost_immunity = False
+        matrix[next_row][next_col] = '-'
+    elif current_cell == 'F':
+        ghost_immunity = True
+        matrix[next_row][next_col] = '-'
+
+print(f"Health: {health}")
+if collected_stars < total_stars:
+    print(f"Uncollected stars: {total_stars - collected_stars}")
+
+matrix[current_position[0]][current_position[1]] = 'P'
+for row in matrix:
+    print(''.join(row))
