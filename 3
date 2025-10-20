@@ -1,0 +1,40 @@
+def classify_books(*args, **kwargs):
+    fiction_books = {}
+    non_fiction_books = {}
+
+    for genre, title in args:
+        for isbn, book_title in kwargs.items():
+            if book_title == title:
+                if genre == "fiction":
+                    fiction_books[isbn] = title
+                elif genre == "non_fiction":
+                    non_fiction_books[isbn] = title
+
+    sorted_fiction = sorted(fiction_books.items())
+    sorted_non_fiction = sorted(non_fiction_books.items(), reverse=True)
+
+    result = ""
+    if fiction_books:
+        result += "Fiction Books:\n"
+        for isbn, title in sorted_fiction:
+            result += f"~~~{isbn}#{title}\n"
+
+    if non_fiction_books:
+        if result and not result.endswith("\n"):
+            result += "\n"
+        result += "Non-Fiction Books:\n"
+        for isbn, title in sorted_non_fiction:
+            result += f"***{isbn}#{title}\n"
+
+    return result.strip()
+
+
+print(classify_books(
+    ("non_fiction", "The Art of War"),
+    ("fiction", "The Great Gatsby"),
+    ("non_fiction", "A Brief History of Time"),
+    ("fiction", "Brave New World"),
+    FF1234HH="The Great Gatsby",
+    NF3845UU="A Brief History of Time",
+    NF3421NN="The Art of War",
+    FF1234UU="Brave New World"))
