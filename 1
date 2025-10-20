@@ -1,0 +1,59 @@
+from collections import deque
+
+substances = [int(el) for el in input().split(', ')]
+crystals_energy_levels = deque([int(el) for el in input().split(', ')])
+
+potions = {
+    110: "Brew of Immortality",
+    100: "Essence of Resilience",
+    90: "Draught of Wisdom",
+    80: "Potion of Agility",
+    70: "Elixir of Strength"
+}
+
+crafted_potions = []
+
+while substances and crystals_energy_levels and len(crafted_potions) < 5:
+    current_substance = substances[-1]
+    current_crystal_energy = crystals_energy_levels[0]
+    total_energy = current_substance + current_crystal_energy
+
+    if total_energy in potions and potions[total_energy] not in crafted_potions:
+        crafted_potions.append(potions[total_energy])
+        substances.pop()
+        crystals_energy_levels.popleft()
+
+    else:
+        available_potions = []
+        for energy, name in potions.items():
+            if energy <= total_energy and name not in crafted_potions:
+                available_potions.append(energy)
+
+        if available_potions:
+            max_energy = max(available_potions)
+            crafted_potions.append(potions[max_energy])
+            substances.pop()
+            crystals_energy_levels.popleft()
+            current_crystal_energy -= 20
+            if current_crystal_energy > 0:
+                crystals_energy_levels.append(current_crystal_energy)
+        else:
+            substances.pop()
+            crystals_energy_levels.popleft()
+            current_crystal_energy -= 5
+            if current_crystal_energy > 0:
+                crystals_energy_levels.append(current_crystal_energy)
+
+if len(crafted_potions) == 5:
+    print("Success! The alchemist has forged all potions!")
+else:
+    print("The alchemist failed to complete his quest.")
+
+if crafted_potions:
+    print(f"Crafted potions: {', '.join(crafted_potions)}")
+
+if substances:
+    print(f"Substances: {', '.join([str(el) for el in substances[::-1]])}")
+
+if crystals_energy_levels:
+    print(f"Crystals: {', '.join([str(el) for el in crystals_energy_levels])}")
